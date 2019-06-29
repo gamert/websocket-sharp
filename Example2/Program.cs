@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using WebSocketSharp;
 using WebSocketSharp.Net;
 using WebSocketSharp.Server;
+using XS2APIProtocol;
 
 namespace Example2
 {
@@ -12,6 +13,8 @@ namespace Example2
         static xs2server _server = new xs2server();
         public static void Main(string[] args)
         {
+//            PlayerResult pr = new PlayerResult();
+
             _server.Start(null);
 
             Console.WriteLine("\nPress Enter key to stop the server...");
