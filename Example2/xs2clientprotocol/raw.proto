@@ -1,0 +1,198 @@
+
+syntax = "proto3";
+
+package XS2APIProtocol;
+
+import "xs2clientprotocol/common.proto";
+
+//
+// Start
+//
+
+message StartRaw {
+  Size2DI map_size = 1;            // Width and height of the map.
+  ImageData pathing_grid = 2;      // 1 bit bitmap of the pathing grid.
+  ImageData terrain_height = 3;    // 1 byte bitmap of the terrain height.
+  ImageData placement_grid = 4;    // 1 bit bitmap of the building placement grid.
+  RectangleI playable_area = 5;    // The playable cells.
+  repeated Point2D start_locations = 6;     // Possible start locations for players.
+}
+
+
+//
+// Observation
+//
+
+message ObservationRaw {
+  PlayerRaw player = 1;
+  repeated Unit units = 2;
+  MapState map_state = 3;                // Fog of war, creep and so on. Board stuff that changes per frame.
+  Event event = 4;
+  repeated Effect effects = 5;
+}
+
+message PowerSource {
+  Point pos = 1;
+  float radius = 2;
+  uint64 tag = 3;
+}
+
+message PlayerRaw {
+  repeated PowerSource power_sources = 1;
+  Point camera = 2;
+  repeated uint32 upgrade_ids = 3;          // TODO: Add to UI observation?
+}
+
+message UnitOrder {
+  uint32 ability_id = 1;
+  oneof target {
+    Point target_world_space_pos = 2;
+    uint64 target_unit_tag = 3;
+  }
+  float progress = 4;              // Progress of train abilities. Range: [0.0, 1.0]
+}
+
+enum DisplayType {
+  DisplayType_Error= 0;
+  Visible = 1;                            // Fully visible
+  Snapshot = 2;                           // Dimmed version of unit left behind after entering fog of war
+  Hidden = 3;                             // Fully hidden
+  Placeholder = 4;                        // Building that hasn't started construction.
+}
+
+enum Alliance {
+  Alliance_Error= 0;
+  Self = 1;
+  Ally = 2;
+  Neutral = 3;
+  Enemy = 4;
+}
+
+enum CloakState {
+  CloakedUnknown = 0;  // Under the fog, so unknown whether it's cloaked or not.
+  Cloaked = 1;
+  CloakedDetected = 2;
+  NotCloaked = 3;
+  CloakedAllied = 4;
+}
+
+message PassengerUnit {
+  uint64 tag = 1;
+  float health = 2;
+  float health_max = 3;
+  float shield = 4;
+  float shield_max = 7;
+  float energy = 5;
+  float energy_max = 8;
+  uint32 unit_type = 6;
+}
+
+message RallyTarget {
+  Point point = 1;  // Will always be filled.
+  uint64 tag = 2;   // Only if it's targeting a unit.
+}
+
+message Unit {
+  // Fields are populated based on type/alliance
+  DisplayType display_type = 1;
+  Alliance alliance = 2;
+
+  uint64 tag = 3;                  // Unique identifier for a unit
+  uint32 unit_type = 4;
+  int32 owner = 5;
+
+  Point pos = 6;
+  float facing = 7;
+  float radius = 8;
+  float build_progress = 9;        // Range: [0.0, 1.0]
+  CloakState cloak = 10;
+  repeated uint32 buff_ids = 27;
+
+  float detect_range = 31;
+  float radar_range = 32;
+
+  bool is_selected = 11;
+  bool is_on_screen = 12;          // Visible and within the camera frustrum.
+  bool is_blip = 13;               // Detected by sensor tower
+  bool is_powered = 35;
+  bool is_active = 39;             // Building is training/researching (ie animated).
+  int32 attack_upgrade_level = 40;
+  int32 armor_upgrade_level = 41;
+  int32 shield_upgrade_level = 42;
+
+  // Not populated for snapshots
+  float health = 14;
+  float health_max = 15;
+  float shield = 16;
+  float shield_max = 36;
+  float energy = 17;
+  float energy_max = 37;
+  int32 mineral_contents = 18;
+  int32 vespene_contents = 19;
+  bool is_flying = 20;
+  bool is_burrowed = 21;
+  bool is_hallucination = 38;      // Unit is your own or detected as a hallucination.
+
+  // Not populated for enemies
+  repeated UnitOrder orders = 22;
+  uint64 add_on_tag = 23;
+  repeated PassengerUnit passengers = 24;
+  int32 cargo_space_taken = 25;
+  int32 cargo_space_max = 26;
+  int32 assigned_harvesters = 28;
+  int32 ideal_harvesters = 29;
+  float weapon_cooldown = 30;
+  uint64 engaged_target_tag = 34;
+  int32 buff_duration_remain = 43;  // How long a buff or unit is still around (eg mule, broodling, chronoboost).
+  int32 buff_duration_max = 44;     // How long the buff or unit is still around (eg mule, broodling, chronoboost).
+  repeated RallyTarget rally_targets = 45;
+}
+
+message MapState {
+  ImageData visibility = 1;            // 1 byte visibility layer.
+  ImageData creep = 2;                 // 1 bit creep layer.
+}
+
+message Event {
+  repeated uint64 dead_units = 1;
+}
+
+message Effect {
+  uint32 effect_id = 1;
+  repeated Point2D pos = 2;                     // Effect may impact multiple locations. (eg. Lurker attack)
+  Alliance alliance = 3;
+  int32 owner = 4;
+  float radius = 5;
+}
+
+
+//
+// Action
+//
+
+message ActionRaw {
+  oneof action {
+    ActionRawUnitCommand unit_command = 1;
+    ActionRawCameraMove camera_move = 2;
+    ActionRawToggleAutocast toggle_autocast = 3;
+  }
+}
+
+message ActionRawUnitCommand {
+  int32 ability_id = 1;
+  oneof target {
+    Point2D target_world_space_pos = 2;
+    uint64 target_unit_tag = 3;
+  }
+  repeated uint64 unit_tags = 4;
+  bool queue_command = 5;
+}
+
+message ActionRawCameraMove {
+  Point center_world_space = 1;
+}
+
+message ActionRawToggleAutocast {
+  int32 ability_id = 1;
+  repeated uint64 unit_tags = 2;
+}

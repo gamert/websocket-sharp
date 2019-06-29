@@ -9,9 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example1", "Example1\Example1.csproj", "{390E2568-57B7-4D17-91E5-C29336368CCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example2", "Example2\Example2.csproj", "{B81A24C8-25BB-42B2-AF99-1E1EACCE74C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xs2api_test", "Example2\xs2api_test.csproj", "{B81A24C8-25BB-42B2-AF99-1E1EACCE74C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example3", "Example3\Example3.csproj", "{C648BA25-77E5-4A40-A97F-D0AA37B9FB26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{588671AD-8C68-4C03-A501-573AE49387E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{52805AEC-EFB1-4F42-BB8E-3ED4E692C568} = {588671AD-8C68-4C03-A501-573AE49387E3}
+		{390E2568-57B7-4D17-91E5-C29336368CCF} = {588671AD-8C68-4C03-A501-573AE49387E3}
+		{C648BA25-77E5-4A40-A97F-D0AA37B9FB26} = {588671AD-8C68-4C03-A501-573AE49387E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CBFB1261-A2DB-4532-A8C0-EA83A976E8C7}
