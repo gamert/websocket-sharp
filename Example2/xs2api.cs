@@ -183,14 +183,14 @@ public class xs2api : WebSocketBehavior
         obs.Score = new Score();
         obs.UiData = new ObservationUI();
 
-        //
-        foreach (PlayerInfo pi in responseGameInfo.PlayerInfo)
-        {
-            PlayerResult pr = new PlayerResult();
-            pr.PlayerId = pi.PlayerId;
-            pr.Result = Result.Undecided;
-            responseObservation.PlayerResult.Add(pr);
-        }
+        //不能有结果，否则结束战斗...
+        //foreach (PlayerInfo pi in responseGameInfo.PlayerInfo)
+        //{
+        //    PlayerResult pr = new PlayerResult();
+        //    pr.PlayerId = pi.PlayerId;
+        //    pr.Result = Result.Undecided;
+        //    responseObservation.PlayerResult.Add(pr);
+        //}
         
         responseObservation.Observation = obs;
     }
@@ -231,8 +231,8 @@ public class xs2api : WebSocketBehavior
 
                         resp.Status = Status.InitGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.JoinGame:
                     {
                         //+		requestJoinGame	{{ "race": "Zerg", "options": { "raw": true, "score": true, "featureLayer": { "width": 24, "resolution": { "x": 32, "y": 32 }, "minimapResolution": { "x": 32, "y": 32 } } } }}	XS2APIProtocol.RequestJoinGame
@@ -245,10 +245,22 @@ public class xs2api : WebSocketBehavior
 
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.RestartGame:
-                    break;
+                    {
+                        //+		requestJoinGame	{{ "race": "Zerg", "options": { "raw": true, "score": true, "featureLayer": { "width": 24, "resolution": { "x": 32, "y": 32 }, "minimapResolution": { "x": 32, "y": 32 } } } }}	XS2APIProtocol.RequestJoinGame
+                        RequestRestartGame restartGame = req.RestartGame;
+                        Log.Warn(restartGame.ToString());
+
+                        Response resp = new Response();
+                        resp.RestartGame = new ResponseRestartGame();
+                        //resp.RestartGame.PlayerId = 1;
+
+                        resp.Status = Status.InGame;      //各种状态...
+                        SendResponse(resp);
+                        return;
+                    }
                 case Request.RequestOneofCase.StartReplay:
                     break;
                 case Request.RequestOneofCase.LeaveGame:
@@ -269,8 +281,8 @@ public class xs2api : WebSocketBehavior
                         FillGameInfo(resp.GameInfo);
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Observation:
                     {
                         RequestObservation requestObservation = req.Observation;
@@ -281,8 +293,8 @@ public class xs2api : WebSocketBehavior
                         FillObservation(resp.Observation);
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Action:
                     {
                         RequestAction requestAction = req.Action;
@@ -292,8 +304,8 @@ public class xs2api : WebSocketBehavior
                         resp.Action = new ResponseAction();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.ObsAction:
                     {
                         RequestObserverAction requestObsAction = req.ObsAction;
@@ -303,8 +315,8 @@ public class xs2api : WebSocketBehavior
                         resp.ObsAction = new ResponseObserverAction();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Step:
                     {
                         RequestStep requestStep = req.Step;
@@ -312,10 +324,12 @@ public class xs2api : WebSocketBehavior
 
                         Response resp = new Response();
                         resp.Step = new ResponseStep();
+                        resp.Step.SimulationLoop = 2;
+                       
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Data:
                     {
                         RequestData requestData = req.Data;
@@ -327,8 +341,8 @@ public class xs2api : WebSocketBehavior
 
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Query:
                     {
                         RequestQuery requestQuery = req.Query;
@@ -338,8 +352,8 @@ public class xs2api : WebSocketBehavior
                         resp.Query = new ResponseQuery();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.SaveReplay:
                     break;
                 case Request.RequestOneofCase.MapCommand:
@@ -351,8 +365,8 @@ public class xs2api : WebSocketBehavior
                         resp.MapCommand = new ResponseMapCommand();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.ReplayInfo:
                     break;
                 case Request.RequestOneofCase.AvailableMaps:
@@ -364,8 +378,8 @@ public class xs2api : WebSocketBehavior
                         resp.AvailableMaps = new ResponseAvailableMaps();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.SaveMap:
                     {
                         RequestSaveMap requestSaveMap = req.SaveMap;
@@ -375,8 +389,8 @@ public class xs2api : WebSocketBehavior
                         resp.SaveMap = new ResponseSaveMap();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Ping:
                     {
                         RequestPing ping = req.Ping;
@@ -395,8 +409,8 @@ public class xs2api : WebSocketBehavior
                         //Sessions.SendTo(s, e.id);//e.
                         //responsePing.WriteTo(_websocket);
 
+                        return;
                     }
-                    break;
                 case Request.RequestOneofCase.Debug:
                     {
                         RequestDebug requestDebug = req.Debug;
@@ -406,8 +420,8 @@ public class xs2api : WebSocketBehavior
                         resp.Debug = new ResponseDebug();
                         resp.Status = Status.InGame;      //各种状态...
                         SendResponse(resp);
+                        return;
                     }
-                    break;
             }
         }
         else
