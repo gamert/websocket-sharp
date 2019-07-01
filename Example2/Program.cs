@@ -1,5 +1,7 @@
+using Google.Protobuf;
 using System;
 using System.Configuration;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using WebSocketSharp;
 using WebSocketSharp.Net;
@@ -8,12 +10,18 @@ using XS2APIProtocol;
 
 namespace Example2
 {
+
+
+
     public class Program
     {
         static xs2server _server = new xs2server();
         public static void Main(string[] args)
         {
-//            PlayerResult pr = new PlayerResult();
+            //TestProto();
+
+            //            PlayerResult pr = new PlayerResult();
+            Size2DI sdi = new Size2DI() { X = 64, Y = 64 };
 
             _server.Start(null);
 
@@ -22,6 +30,112 @@ namespace Example2
 
             _server.Stop();
         }
+
+        static void TestProto()
+        {
+            Response res = new Response();
+            res.Ping = new ResponsePing();
+            res.Ping.BaseBuild = 1;
+            res.Ping.DataBuild = 2;
+            res.Ping.DataVersion = "3";
+            res.Ping.GameVersion = "4";
+
+            byte[] bb = res.ToByteArray();
+
+            //ByteString a = res.ToByteString();
+
+            //Console.WriteLine(a.ToStringUtf8());
+            //Console.WriteLine(a.ToString());
+
+            //Request req = Request.Parser.ParseFrom(a.ToByteArray());
+            //if (req != null)
+            //{
+            //    if(req.RequestCase == Request.RequestOneofCase.Ping)
+            //    {
+            //        RequestPing ping = req.Ping;
+            //        Console.WriteLine(ping.ToString());
+            //    }
+            //}
+            Response res2 = Response.Parser.ParseFrom(bb);
+            if (res2 != null)
+            {
+                if (res2.ResponseCase == Response.ResponseOneofCase.Ping)
+                {
+                    ResponsePing ping = res2.Ping;
+                    Console.WriteLine(ping.ToString());
+                }
+            }
+
+            //ÐòÁÐ»¯²Ù×÷
+            //MemoryStream ms = new MemoryStream();
+
+
+            //BinaryFormatter bm = new BinaryFormatter();
+            //bm.Serialize(ms, p);
+            //Serializer.Serialize<Person>(ms, p);
+            //byte[] data = ms.ToArray();//length=27  709
+            //responsePing.SerializeToString();
+            //responsePing.WriteTo(ms);
+            //string s  = responsePing.ToString();
+            //byte[] a = ms.ToArray();
+
+
+
+
+        }
+
+        //public class DataUtils
+        //{
+        //    public static byte[] ObjectToBytes<T>(T instance)
+        //    {
+        //        try
+        //        {
+        //            byte[] array;
+        //            if (instance == null)
+        //            {
+        //                array = new byte[0];
+        //            }
+        //            else
+        //            {
+        //                MemoryStream memoryStream = new MemoryStream();
+        //                ProtoBuf.Serializer.Serialize(memoryStream, instance);
+        //                array = new byte[memoryStream.Length];
+        //                memoryStream.Position = 0L;
+        //                memoryStream.Read(array, 0, array.Length);
+        //                memoryStream.Dispose();
+        //            }
+
+        //            return array;
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+
+        //            return new byte[0];
+        //        }
+        //    }
+
+        //    public static T BytesToObject<T>(byte[] bytesData, int offset, int length)
+        //    {
+        //        if (bytesData.Length == 0)
+        //        {
+        //            return default(T);
+        //        }
+        //        try
+        //        {
+        //            MemoryStream memoryStream = new MemoryStream();
+        //            memoryStream.Write(bytesData, 0, bytesData.Length);
+        //            memoryStream.Position = 0L;
+        //            T result = Serializer.Deserialize<T>(memoryStream);
+        //            memoryStream.Dispose();
+        //            return result;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return default(T);
+        //        }
+        //    }
+        //}
 
 
         public static void Main0_(string[] args)
